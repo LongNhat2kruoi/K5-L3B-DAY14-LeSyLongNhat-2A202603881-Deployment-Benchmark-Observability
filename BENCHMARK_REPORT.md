@@ -18,9 +18,9 @@ The raw JSON evidence is under `06-lab-complete/benchmark-observability/develop/
 | Concurrency | RPS | p50 ms | p95 ms | p99 ms | Error rate |
 |---:|---:|---:|---:|---:|---:|
 | 1 | 4.18 | 201.9 | 248.2 | 1712.8 | 0.67% |
-| 10 | see `load_v2_c10.json` | see JSON | see JSON | see JSON | see JSON |
-| 50 | see `load_v2_c50.json` | see JSON | see JSON | see JSON | see JSON |
-| 100 | see `load_v2_c100.json` | see JSON | see JSON | see JSON | see JSON |
+| 10 | 33.74 | 207.8 | 481.9 | 1728.2 | 1.67% |
+| 50 | 85.99 | 245.4 | 651.6 | 1745.4 | 0.67% |
+| 100 | 38.21 | 1136.1 | 5528.6 | 5903.0 | 0.33% |
 
 Tail latency is much more sensitive to injected slow requests than average latency; p99 exposes the user-facing outliers.
 
@@ -29,7 +29,7 @@ Tail latency is much more sensitive to injected slow requests than average laten
 | MOCK_SLOW_RATE | Avg ms | p95 ms | p99 ms | SLO |
 |---:|---:|---:|---:|---|
 | 0 | 236.2 | 473.6 | 551.2 | PASS |
-| 0.03 | see JSON | see JSON | see JSON | see JSON |
+| 0.03 | 223.2 | 466.9 | 506.5 | PASS |
 | 0.1 | 421.8 | 1702.7 | 1995.0 | FAIL p95 |
 
 ## 3. Quality benchmark
@@ -44,7 +44,7 @@ The two initially failing questions were JWT vs API key and Kubernetes HPA metri
 
 ## 4. Observability
 
-The production compose stack and alert rules are present under `06-lab-complete/benchmark-observability/production/`. Cloud dashboards/traces/screenshots were not captured because the full stack was not completed in this run; no screenshot or alert timing is invented here.
+The production compose stack and alert rules are present under `06-lab-complete/benchmark-observability/production/`. A real local run produced the required observability screenshots under `screenshots/` (Grafana, Jaeger slow/error traces, and Prometheus alerts). Locust CSV evidence for one and three agent replicas is under `benchmark-results/scale_1_stats.csv` and `benchmark-results/scale_3_stats.csv`.
 
 ## 5. Conclusion
 

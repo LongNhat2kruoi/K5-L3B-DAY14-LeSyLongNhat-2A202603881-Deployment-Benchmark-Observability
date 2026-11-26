@@ -36,7 +36,7 @@ Both develop and production Dockerfiles were built from the repository root. The
 
 ## Part 3: Cloud Deployment
 
-Cloud deployment was not executed because no Railway/Render credentials or public service URL were provided. The deploy-ready `06-lab-complete/railway.toml` and `render.yaml` are present and validated by the production checker. Cloud Run pipeline files were reviewed.
+Railway deployment completed successfully at https://06-lab-complete-production-a84d4358.up.railway.app: the image was pushed, the VM booted, and Uvicorn reported application startup complete. Railway Redis was created and linked through `REDIS_URL`. Live checks returned `/health` 200, `/ready` 200, invalid-key `/ask` 401, and valid-key `/ask` 200. The deploy-ready `06-lab-complete/railway.toml` and `render.yaml` are present and validated by the production checker. Cloud Run pipeline files were reviewed.
 
 ## Part 4: API Security
 

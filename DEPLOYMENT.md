@@ -2,7 +2,22 @@
 
 ## Status
 
-The service is production-ready locally and Docker-validated. No public Railway/Render URL was created because cloud credentials were not supplied.
+The service was deployed successfully to Railway. The Railway CLI output confirmed image push, VM boot, Uvicorn startup, and application startup.
+
+## Public URL
+
+https://06-lab-complete-production-a84d4358.up.railway.app
+
+## Verified responses
+
+```text
+GET /health → HTTP 200 {"status":"ok"}
+GET /ready  → HTTP 200 {"status":"ready"}
+POST /ask with invalid key → HTTP 401
+POST /ask with valid key → HTTP 200
+```
+
+Railway Redis was created and linked through `REDIS_URL`; readiness now returns HTTP 200.
 
 ## Local validation
 
