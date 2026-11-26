@@ -1,60 +1,60 @@
-# Day 14 Lab — Mission Answers
+# Câu trả lời nhiệm vụ Day 14
 
-## Part 1: Localhost vs Production
+## Phần 1: Localhost và Production
 
-### Exercise 1.1 — Anti-patterns
+### Bài 1.1 — Các anti-pattern
 
-1. Hard-coded configuration and secrets.
-2. No health/readiness distinction.
-3. In-memory state, which breaks across workers/instances.
-4. No authentication, rate limiting, or cost protection.
-5. Unstructured logs and no graceful shutdown.
+1. Cấu hình và secret được hard-code.
+2. Không phân biệt health và readiness.
+3. Trạng thái nằm trong bộ nhớ tiến trình, gây lỗi khi chạy nhiều worker/instance.
+4. Không có xác thực, giới hạn tốc độ hoặc bảo vệ chi phí.
+5. Log không có cấu trúc và không xử lý graceful shutdown.
 
-### Exercise 1.2 — Basic test
+### Bài 1.2 — Kiểm tra cơ bản
 
-The develop agent was exercised with `POST /ask` and returned a mock response successfully.
+Agent develop đã được kiểm tra bằng `POST /ask` và trả về phản hồi giả lập thành công.
 
-### Exercise 1.3 — Comparison
+### Bài 1.3 — So sánh
 
-| Feature | Develop | Production | Why important |
+| Tính năng | Develop | Production | Ý nghĩa |
 |---|---|---|---|
-| Config | Defaults/code | Environment variables | Same image across environments |
-| State | Process memory | Redis | Safe restart and horizontal scale |
-| Auth | Minimal/none | API key/JWT | Protect API and spend |
-| Limits | None | Redis sliding window | Prevent abuse |
-| Operations | Basic logs | JSON logs, probes, shutdown | Debuggability and safe deploys |
+| Cấu hình | Giá trị mặc định/code | Biến môi trường | Dùng cùng image cho nhiều môi trường |
+| Trạng thái | Bộ nhớ tiến trình | Redis | An toàn khi restart và scale ngang |
+| Xác thực | Tối thiểu/không có | API key/JWT | Bảo vệ API và chi phí |
+| Giới hạn | Không có | Sliding window trên Redis | Ngăn lạm dụng |
+| Vận hành | Log cơ bản | Log JSON, probe, shutdown | Dễ debug và deploy an toàn |
 
-## Part 2: Docker
+## Phần 2: Docker
 
-### Exercise 2.1
+### Bài 2.1
 
-The production image uses a slim Python base, installs dependencies in a builder stage, copies only runtime artifacts, runs as non-root, and exposes a healthcheck. Multi-stage builds reduce attack surface and image size.
+Image production dùng Python slim, cài dependency ở stage builder, chỉ sao chép artifact runtime, chạy bằng user non-root và có healthcheck. Multi-stage giúp giảm bề mặt tấn công và kích thước image.
 
-### Exercise 2.2–2.4
+### Bài 2.2–2.4
 
-Both develop and production Dockerfiles were built from the repository root. The production stack consists of agent, Redis, and Nginx/load-balancer components where specified. Compose configuration was validated with Docker Compose.
+Dockerfile develop và production đều được build từ thư mục gốc repository. Stack production gồm agent, Redis và Nginx/load balancer theo yêu cầu. Cấu hình Compose đã được kiểm tra hợp lệ bằng Docker Compose.
 
-## Part 3: Cloud Deployment
+## Phần 3: Triển khai cloud
 
-Railway deployment completed successfully at https://06-lab-complete-production-a84d4358.up.railway.app: the image was pushed, the VM booted, and Uvicorn reported application startup complete. Railway Redis was created and linked through `REDIS_URL`. Live checks returned `/health` 200, `/ready` 200, invalid-key `/ask` 401, and valid-key `/ask` 200. The deploy-ready `06-lab-complete/railway.toml` and `render.yaml` are present and validated by the production checker. Cloud Run pipeline files were reviewed.
+Railway đã triển khai thành công tại https://06-lab-complete-production-a84d4358.up.railway.app: image được đẩy lên, VM khởi động và Uvicorn báo ứng dụng hoàn tất khởi động. Redis Railway được tạo và liên kết qua `REDIS_URL`. Kiểm tra trực tiếp cho kết quả `/health` 200, `/ready` 200, `/ask` với key sai 401 và key đúng 200. Hai file `06-lab-complete/railway.toml` và `render.yaml` sẵn sàng triển khai và đã được production checker kiểm tra. Các file pipeline Cloud Run cũng đã được rà soát.
 
-## Part 4: API Security
+## Phần 4: Bảo mật API
 
-The final agent enforces `X-API-Key` (401 when missing/incorrect), Redis-backed rate limiting (429 with `Retry-After`), and Redis-backed cost budget protection (402). Cost is calculated from input/output token counts and accumulated by day.
+Agent cuối cùng bắt buộc `X-API-Key` (401 khi thiếu/sai), giới hạn tốc độ trên Redis (429 kèm `Retry-After`) và bảo vệ ngân sách chi phí trên Redis (402). Chi phí được tính từ số token đầu vào/đầu ra và cộng dồn theo ngày.
 
-## Part 5: Scaling & Reliability
+## Phần 5: Scale và độ tin cậy
 
-The final agent has `/health` liveness, `/ready` Redis readiness, graceful SIGTERM handling, stateless request processing, and Redis state. The production checker verified restart persistence for rate limits and Docker stop in under 10 seconds.
+Agent có liveness `/health`, readiness Redis `/ready`, xử lý SIGTERM êm, xử lý request stateless và lưu trạng thái trên Redis. Production checker đã xác nhận giới hạn tốc độ vẫn tồn tại sau restart và Docker stop hoàn tất dưới 10 giây.
 
-## Part 6: Production Readiness
+## Phần 6: Production readiness
 
-`python check_production_ready.py` completed with **PASS 12/12 — 43/43 checks passed**. Docker image size was **257 MB**.
+`python check_production_ready.py` hoàn tất với **ĐẠT 12/12 — 43/43 kiểm tra đạt**. Kích thước Docker image là **257 MB**.
 
-## Part 7: Benchmark & Observability
+## Phần 7: Benchmark và khả năng quan sát
 
-Local load-test and eval JSON files are in `06-lab-complete/benchmark-observability/develop/reports/`. Agent v2 improved from 91.3% to 100.0% accuracy after adding JWT/API-key and Kubernetes HPA knowledge-base entries, with no regression.
+Các file JSON load-test và đánh giá cục bộ nằm trong `06-lab-complete/benchmark-observability/develop/reports/`. Agent v2 tăng độ chính xác từ 91.3% lên 100.0% sau khi bổ sung kiến thức về JWT/API key và Kubernetes HPA, không phát sinh hồi quy.
 
-## AI log
+## Nhật ký sử dụng AI
 
-- Used AI to inspect the repository, implement the Part 6 TODOs, diagnose Python 3.14/pydantic wheel compatibility, and validate with the supplied checker.
-- All implementation changes were locally tested with Docker, Redis, runtime HTTP checks, and the official production-readiness script.
+- Dùng AI để đọc repository, hoàn thiện TODO của Phần 6, chẩn đoán lỗi tương thích wheel Python 3.14/pydantic và kiểm tra bằng checker được cung cấp.
+- Toàn bộ thay đổi đã được kiểm tra cục bộ bằng Docker, Redis, HTTP runtime và production-readiness script chính thức.

@@ -1,25 +1,25 @@
-# Deployment Information
+# Thông tin triển khai
 
-## Status
+## Trạng thái
 
-The service was deployed successfully to Railway. The Railway CLI output confirmed image push, VM boot, Uvicorn startup, and application startup.
+Dịch vụ đã được triển khai thành công lên Railway. CLI Railway xác nhận image đã được đẩy lên, VM khởi động, Uvicorn chạy và ứng dụng hoàn tất khởi động.
 
-## Public URL
+## URL công khai
 
 https://06-lab-complete-production-a84d4358.up.railway.app
 
-## Verified responses
+## Kết quả kiểm tra
 
 ```text
 GET /health → HTTP 200 {"status":"ok"}
 GET /ready  → HTTP 200 {"status":"ready"}
-POST /ask with invalid key → HTTP 401
-POST /ask with valid key → HTTP 200
+POST /ask với API key sai → HTTP 401
+POST /ask với API key đúng → HTTP 200
 ```
 
-Railway Redis was created and linked through `REDIS_URL`; readiness now returns HTTP 200.
+Redis Railway đã được tạo và liên kết qua `REDIS_URL`; endpoint readiness hiện trả HTTP 200.
 
-## Local validation
+## Kiểm tra cục bộ
 
 ```bash
 cd 06-lab-complete
@@ -32,12 +32,12 @@ curl -X POST http://localhost:8000/ask \
 docker compose down
 ```
 
-## Environment variables
+## Biến môi trường
 
-`PORT`, `ENVIRONMENT`, `AGENT_API_KEY`, `REDIS_URL`, `RATE_LIMIT_PER_MINUTE`, and `DAILY_BUDGET_USD` are defined in `.env.example`.
+`PORT`, `ENVIRONMENT`, `AGENT_API_KEY`, `REDIS_URL`, `RATE_LIMIT_PER_MINUTE` và `DAILY_BUDGET_USD` được khai báo trong `.env.example`.
 
-## Deployment configuration
+## Cấu hình triển khai
 
 Railway: `06-lab-complete/railway.toml`.
 
-Render: `06-lab-complete/render.yaml`; the API key is generated as a secret and Redis URL is supplied externally.
+Render: `06-lab-complete/render.yaml`; API key được tạo dưới dạng secret và URL Redis được cung cấp từ bên ngoài.
